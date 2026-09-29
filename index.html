@@ -97,4 +97,58 @@ allowfullscreen></iframe>
 </div></div></section>
 </div></main>
 <footer class="foot"><div class="c"><div class="footGrid"><div><h3>About G9 News</h3><p>Digital news covering Telangana, Andhra Pradesh, India and important developments around the world.</p></div><div><h3>News</h3><a href="#">Telangana</a><br><a href="#">Andhra Pradesh</a><br><a href="#">India</a></div><div><h3>Sections</h3><a href="#">Politics</a><br><a href="#">Crime</a><br><a href="#">Sports</a></div><div><h3>Information</h3><a href="#">About</a><br><a href="#">Contact</a><br><a href="#">Privacy</a></div></div><div class="copy">© 2026 G9 News. All rights reserved.</div></div></footer>
+<script>
+async function loadG9NewsVideos() {
+  try {
+    const response = await fetch("/api/youtube");
+    const data = await response.json();
+
+    if (!data.videos || !data.videos.length) return;
+
+    const videos = data.videos;
+
+    const main = document.querySelector(".videoMain");
+    if (main) {
+      const video = videos[0];
+
+      main.innerHTML = `
+        <iframe
+          width="100%"
+          height="250"
+          src="https://www.youtube.com/embed/${video.videoId}"
+          title="${video.title}"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      `;
+    }
+
+    const list = document.querySelector(".videoList");
+
+    if (list) {
+      list.innerHTML = videos.slice(1, 5).map(video => `
+        <div>
+          <iframe
+            width="100%"
+            height="130"
+            src="https://www.youtube.com/embed/${video.videoId}"
+            title="${video.title}"
+            frameborder="0"
+            allowfullscreen>
+          </iframe>
+          <div style="padding-top:8px;font-weight:700;">
+            ${video.title}
+          </div>
+        </div>
+      `).join("");
+    }
+
+  } catch (error) {
+    console.error("G9 News YouTube update failed:", error);
+  }
+}
+
+loadG9NewsVideos();
+</script>
 </body></html>
