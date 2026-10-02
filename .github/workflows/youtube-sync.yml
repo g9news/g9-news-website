@@ -11,5 +11,6 @@ jobs:
     steps:
       - name: Sync G9 News YouTube videos
         run: curl --fail --silent --show-error "https://g9newstelugu.com/api/sync-youtube"
-- name: Create article drafts
+
+      - name: Create article drafts
         run: curl --fail --silent --show-error "https://g9newstelugu.com/api/create-article"
