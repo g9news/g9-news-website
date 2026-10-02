@@ -1,7 +1,5 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   try {
-    const channelId = "UCl-cEVR90aGMMlWh7_pbMlQ";
-
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
@@ -11,7 +9,8 @@ export default async function handler(req, res) {
       });
     }
 
-    // Get latest G9 News videos from YouTube
+    const channelId = "UCl-cEVR90aGMMlWh7_pbMlQ";
+
     const youtubeResponse = await fetch(
       `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`
     );
@@ -26,19 +25,88 @@ export default async function handler(req, res) {
 
     const videos = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)]
       .slice(0, 10)
-      .map(match => {
+      .map((match) => {
         const item = match[1];
 
-        const get = tag => {
+        const get = (tag) => {
           const result = item.match(
             new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`)
           );
 
           return result
-            ? result[1].replace(/<!\[CDATA\[|\]\]>/g, "").trim()
+            ? result[1].replace(/<!\[CDATA\[|\]\]>/g, "")
             : "";
         };
 
         const videoId = get("yt:videoId");
 
-       
+        return {
+          youtube_video_id: videoId,
+          title: get("title"),
+          thumbnail_url: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+          video_url: `https://www.youtube.com/watch?v=${videoId}`,
+          published_at: get("published")
+        };
+      });
+
+    let added = 0;
+
+    for (const video of videos) {
+      const checkResponse = await fetch(
+        `${supabaseUrl}/rest/v1/videos?youtube_video_id=eq.${encodeURIComponent(
+          video.youtube_video_id
+        )}&select=id`,
+        {
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`
+          }
+        }
+      );
+
+      if (!checkResponse.ok) {
+        const error = await checkResponse.text();
+        return res.status(checkResponse.status).json({ error });
+      }
+
+      const existing = await checkResponse.json();
+
+      if (existing.length > 0) {
+        continue;
+      }
+
+      const insertResponse = await fetch(
+        `${supabaseUrl}/rest/v1/videos`,
+        {
+          method: "POST",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json",
+            Prefer: "return=minimal"
+          },
+          body: JSON.stringify(video)
+        }
+      );
+
+      if (!insertResponse.ok) {
+        const error = await insertResponse.text();
+        return res.status(insertResponse.status).json({ error });
+      }
+
+      added++;
+    }
+
+    return res.status(200).json({
+      success: true,
+      checked: videos.length,
+      added
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      error: error.message || "Server error"
+    });
+  }
+};
