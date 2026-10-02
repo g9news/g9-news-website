@@ -32,7 +32,6 @@ module.exports = async function handler(req, res) {
           const result = item.match(
             new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`)
           );
-
           return result
             ? result[1].replace(/<!\[CDATA\[|\]\]>/g, "")
             : "";
@@ -49,58 +48,29 @@ module.exports = async function handler(req, res) {
         };
       });
 
-    let added = 0;
-
-    for (const video of videos) {
-      const checkResponse = await fetch(
-        `${supabaseUrl}/rest/v1/videos?youtube_video_id=eq.${encodeURIComponent(
-          video.youtube_video_id
-        )}&select=id`,
-        {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`
-          }
-        }
-      );
-
-      if (!checkResponse.ok) {
-        const error = await checkResponse.text();
-        return res.status(checkResponse.status).json({ error });
+    const response = await fetch(
+      `${supabaseUrl}/rest/v1/videos?on_conflict=youtube_video_id`,
+      {
+        method: "POST",
+        headers: {
+          apikey: supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`,
+          "Content-Type": "application/json",
+          Prefer: "resolution=ignore-duplicates,return=minimal"
+        },
+        body: JSON.stringify(videos)
       }
+    );
 
-      const existing = await checkResponse.json();
-
-      if (existing.length > 0) {
-        continue;
-      }
-
-      const insertResponse = await fetch(
-        `${supabaseUrl}/rest/v1/videos`,
-        {
-          method: "POST",
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            "Content-Type": "application/json",
-            Prefer: "return=minimal"
-          },
-          body: JSON.stringify(video)
-        }
-      );
-
-      if (!insertResponse.ok) {
-        const error = await insertResponse.text();
-        return res.status(insertResponse.status).json({ error });
-      }
-
-      added++;
+    if (!response.ok) {
+      const error = await response.text();
+      return res.status(response.status).json({ error });
     }
 
     return res.status(200).json({
       success: true,
       checked: videos.length,
-      added
+      message: "YouTube sync completed"
     });
   } catch (error) {
     console.error(error);
