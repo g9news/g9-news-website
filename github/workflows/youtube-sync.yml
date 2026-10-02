@@ -1,0 +1,13 @@
+name: Sync YouTube Videos
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync G9 News YouTube videos
+        run: curl --fail --silent --show-error "https://g9newstelugu.com/api/sync-youtube"
