@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G9 News Admin</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+    }
+
+    header {
+      background: #c90000;
+      color: white;
+      padding: 18px 25px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .login-box {
+      max-width: 420px;
+      margin: 80px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #172554;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #c90000;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #a80000;
+    }
+
+    #message {
+      margin-top: 15px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  G9 NEWS — Admin Dashboard
+</header>
+
+<div class="container">
+
+  <div class="login-box">
+    <h2>Admin Login</h2>
+
+    <input
+      type="email"
+      id="email"
+      placeholder="Email"
+    >
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Password"
+    >
+
+    <button onclick="login()">
+      Login
+    </button>
+
+    <div id="message"></div>
+  </div>
+
+</div>
+
+<script>
+async function login() {
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const message = document.getElementById("message");
+
+  if (!email || !password) {
+    message.innerText = "Please enter email and password.";
+    return;
+  }
+
+  message.innerText = "Checking login...";
+
+  try {
+
+    const response = await fetch("/api/admin-login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      message.innerText = "Login successful";
+    } else {
+      message.innerText = data.error || "Login failed";
+    }
+
+  } catch (error) {
+    message.innerText = "Login error";
+  }
+}
+</script>
+
+</body>
+</html>
