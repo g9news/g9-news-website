@@ -44,7 +44,7 @@ module.exports = async function handler(req, res) {
     }
 
     const accessToken = tokenData.access_token;
-
+const channelResponse = await fetch(
   "https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true",
   {
     headers: {
