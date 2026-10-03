@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G9 News Dashboard</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+    }
+
+    header {
+      background: #c90000;
+      color: white;
+      padding: 18px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h2 { margin: 0; }
+
+    header button {
+      background: white;
+      color: #c90000;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .status {
+      color: #c90000;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h2>G9 NEWS — Admin Dashboard</h2>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+  <h2>Article Drafts</h2>
+  <div id="articles">Loading drafts...</div>
+</div>
+
+<script>
+const token = sessionStorage.getItem("g9_admin_token");
+
+if (!token) {
+  window.location.href = "/admin.html";
+}
+
+async function loadArticles() {
+  try {
+    const response = await fetch("/api/admin-articles", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      sessionStorage.removeItem("g9_admin_token");
+      window.location.href = "/admin.html";
+      return;
+    }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      document.getElementById("articles").innerText =
+        data.error || "Could not load articles.";
+      return;
+    }
+
+    const container = document.getElementById("articles");
+
+    if (!data.articles.length) {
+      container.innerHTML = "<p>No drafts available.</p>";
+      return;
+    }
+
+    container.innerHTML = data.articles.map(article => `
+      <div class="card">
+        <h3>${escapeHtml(article.title || "Untitled")}</h3>
+        <p>${escapeHtml(article.summary || "")}</p>
+        <p class="status">Status: ${escapeHtml(article.status || "draft")}</p>
+      </div>
+    `).join("");
+
+  } catch (error) {
+    document.getElementById("articles").innerText =
+      "Could not load articles.";
+  }
+}
+
+function escapeHtml(value) {
+  const div = document.createElement("div");
+  div.textContent = value;
+  return div.innerHTML;
+}
+
+function logout() {
+  sessionStorage.removeItem("g9_admin_token");
+  window.location.href = "/admin.html";
+}
+
+loadArticles();
+</script>
+
+</body>
+</html>
