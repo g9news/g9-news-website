@@ -2,22 +2,23 @@ module.exports = async function handler(req, res) {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const openaiKey = process.env.OPENAI_API_KEY;
 
-    if (!supabaseUrl || !supabaseKey) {
+    if (!supabaseUrl || !supabaseKey || !openaiKey) {
       return res.status(500).json({
-        error: "Supabase configuration missing"
+        error: "Server configuration missing"
       });
     }
 
-    // Get videos that do not yet have an article
+    const headers = {
+      apikey: supabaseKey,
+      Authorization: `Bearer ${supabaseKey}`
+    };
+
+    // Get latest YouTube videos
     const videosResponse = await fetch(
       `${supabaseUrl}/rest/v1/videos?select=*&order=published_at.desc&limit=10`,
-      {
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${supabaseKey}`
-        }
-      }
+      { headers }
     );
 
     if (!videosResponse.ok) {
@@ -27,20 +28,15 @@ module.exports = async function handler(req, res) {
     }
 
     const videos = await videosResponse.json();
-
     let created = 0;
 
     for (const video of videos) {
+      // Skip videos that already have an article
       const checkResponse = await fetch(
         `${supabaseUrl}/rest/v1/articles?source_video_id=eq.${encodeURIComponent(
           video.youtube_video_id
         )}&select=id`,
-        {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`
-          }
-        }
+        { headers }
       );
 
       if (!checkResponse.ok) {
@@ -51,24 +47,89 @@ module.exports = async function handler(req, res) {
 
       const existing = await checkResponse.json();
 
-      if (existing.length > 0) {
+      if (existing.length > 0) continue;
+
+      // Get Telugu transcript
+      const transcriptResponse = await fetch(
+        `https://g9newstelugu.com/api/youtube-transcript?videoId=${encodeURIComponent(
+          video.youtube_video_id
+        )}`
+      );
+
+      const transcriptData = await transcriptResponse.json();
+
+      if (
+        !transcriptData.success ||
+        !transcriptData.captions_available ||
+        !transcriptData.transcript
+      ) {
         continue;
       }
 
-     const transcriptResponse = await fetch(
-  `https://g9newstelugu.com/api/youtube-transcript?videoId=${encodeURIComponent(video.youtube_video_id)}`
-);
+      // Convert transcript into a professional Telugu news report
+      const aiResponse = await fetch(
+        "https://api.openai.com/v1/responses",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${openaiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "gpt-5-mini",
+            instructions:
+              "You are an editor for G9 News Telugu. Convert the supplied Telugu YouTube transcript into a professional Telugu news report. Stay strictly factual. Do not invent names, quotes, dates, numbers, locations, allegations, or political claims. Preserve attribution and uncertainty. Remove subtitle timestamps and repetition. Return ONLY valid JSON with exactly these keys: title, summary, body.",
+            input: `Video title: ${video.title}\n\nTranscript:\n${transcriptData.transcript}`,
+            text: {
+              format: {
+                type: "json_schema",
+                name: "news_article",
+                strict: true,
+                schema: {
+                  type: "object",
+                  properties: {
+                    title: { type: "string" },
+                    summary: { type: "string" },
+                    body: { type: "string" }
+                  },
+                  required: ["title", "summary", "body"],
+                  additionalProperties: false
+                }
+              }
+            }
+          })
+        }
+      );
 
-const transcriptData = await transcriptResponse.json();
+      const aiData = await aiResponse.json();
 
-const transcript =
-  transcriptData.success && transcriptData.captions_available
-    ? transcriptData.transcript
-    : "";
+      if (!aiResponse.ok) {
+        console.error("OpenAI error:", aiData);
+        continue;
+      }
+
+      const outputText =
+        aiData.output_text ||
+        aiData.output
+          ?.flatMap(item => item.content || [])
+          ?.find(item => item.type === "output_text")?.text;
+
+      if (!outputText) continue;
+
+      let report;
+
+      try {
+        report = JSON.parse(outputText);
+      } catch {
+        console.error("Could not parse AI report");
+        continue;
+      }
+
+      // Save as draft for dad to review
       const article = {
-        title: video.title,
-        summary: "",
-    body: transcript,
+        title: report.title || video.title,
+        summary: report.summary || "",
+        body: report.body || "",
         category: video.category || "Latest",
         language: "te",
         thumbnail_url: video.thumbnail_url,
@@ -83,8 +144,7 @@ const transcript =
         {
           method: "POST",
           headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
+            ...headers,
             "Content-Type": "application/json",
             Prefer: "return=minimal"
           },
@@ -106,7 +166,6 @@ const transcript =
       checked: videos.length,
       drafts_created: created
     });
-
   } catch (error) {
     console.error(error);
 
