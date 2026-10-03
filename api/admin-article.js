@@ -73,11 +73,14 @@ module.exports = async function handler(req, res) {
       return res.status(404).json({ error: "Article not found" });
     }
 
-    return res.status(200).json({
-      success: true,
-      article: articles[0]
-    });
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+res.setHeader("Pragma", "no-cache");
+res.setHeader("Expires", "0");
 
+return res.status(200).json({
+  success: true,
+  article: articles[0]
+});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Server error" });
