@@ -55,12 +55,20 @@ module.exports = async function handler(req, res) {
         continue;
       }
 
-      // For now this creates a safe draft.
-      // Transcript/report generation will be added next.
+     const transcriptResponse = await fetch(
+  `https://g9newstelugu.com/api/youtube-transcript?videoId=${encodeURIComponent(video.youtube_video_id)}`
+);
+
+const transcriptData = await transcriptResponse.json();
+
+const transcript =
+  transcriptData.success && transcriptData.captions_available
+    ? transcriptData.transcript
+    : "";
       const article = {
         title: video.title,
         summary: "",
-        body: "",
+    body: transcript,
         category: video.category || "Latest",
         language: "te",
         thumbnail_url: video.thumbnail_url,
