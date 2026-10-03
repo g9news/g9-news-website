@@ -47,7 +47,7 @@ module.exports = async function handler(req, res) {
       return res.status(403).json({ error: "Admin access required" });
     }
 
-    const { id, title, summary, body, category } = req.body || {};
+   const { id, title, summary, body, category, thumbnail_url } = req.body || {};
 
     if (!id || !title) {
       return res.status(400).json({ error: "Article ID and headline required" });
@@ -69,6 +69,7 @@ module.exports = async function handler(req, res) {
           summary: summary || "",
           body: body || "",
           category: category || "Latest",
+          thumbnail_url: thumbnail_url || null,
           status: "draft",
           updated_at: new Date().toISOString()
         })
