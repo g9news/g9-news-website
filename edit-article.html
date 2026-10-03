@@ -99,7 +99,12 @@
 
   <label>Full Article</label>
   <textarea id="body"></textarea>
+<label>Article Photo</label>
+<input type="file" id="photo" accept="image/*">
 
+<div style="margin-top:10px;">
+  <img id="photoPreview" style="max-width:100%; max-height:350px; display:none; border-radius:6px;">
+</div>
   <label>Category</label>
   <select id="category">
     <option>Latest</option>
@@ -168,7 +173,18 @@ function publishArticle() {
   document.getElementById("message").innerText =
     "Publish feature is being connected...";
 }
+document.getElementById("photo").addEventListener("change", function () {
+  const file = this.files[0];
+  const preview = document.getElementById("photoPreview");
 
+  if (!file) {
+    preview.style.display = "none";
+    return;
+  }
+
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
+});
 loadArticle();
 </script>
 
