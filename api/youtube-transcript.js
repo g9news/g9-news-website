@@ -44,7 +44,7 @@ module.exports = async function handler(req, res) {
     }
 
     const accessToken = tokenData.access_token;
-const channelResponse = await fetch(
+
   "https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true",
   {
     headers: {
@@ -55,9 +55,7 @@ const channelResponse = await fetch(
 
 const channelData = await channelResponse.json();
 
-return res.status(200).json({
-  authorized_channel: channelData
-});
+
     // Find caption tracks for this video
     const captionsResponse = await fetch(
       `https://www.googleapis.com/youtube/v3/captions?part=snippet&videoId=${encodeURIComponent(videoId)}`,
