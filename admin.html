@@ -140,8 +140,10 @@ async function login() {
     const data = await response.json();
 
     if (data.success) {
-      message.innerText = "Login successful";
-    } else {
+  sessionStorage.setItem("g9_admin_token", data.access_token);
+  window.location.href = "/dashboard.html";
+}
+    else {
       message.innerText = data.error || "Login failed";
     }
 
