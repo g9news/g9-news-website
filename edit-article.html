@@ -138,7 +138,7 @@ if (!token || !id) {
 
 async function loadArticle() {
   const response = await fetch(
-    `/api/admin-article?id=${encodeURIComponent(id)}`,
+   `/api/admin-article?id=${encodeURIComponent(id)}`,
     {
       headers: {
         Authorization: `Bearer ${token}`
