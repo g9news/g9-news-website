@@ -50,7 +50,7 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       success: true,
       message: "G9 News YouTube authorization successful",
-     refresh_token_received: Boolean(tokens.refresh_token)
+    refresh_token: tokens.refresh_token
     });
 
   } catch (error) {
