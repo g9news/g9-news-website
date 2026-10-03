@@ -62,9 +62,7 @@ module.exports = async function handler(req, res) {
         error: captionsData
       });
     }
-return res.status(200).json({
-  captions: captionsData.items
-});
+
     if (!captionsData.items || captionsData.items.length === 0) {
       return res.status(200).json({
         success: true,
