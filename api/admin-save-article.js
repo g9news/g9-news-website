@@ -69,7 +69,7 @@ module.exports = async function handler(req, res) {
           summary: summary || "",
           body: body || "",
           category: category || "Latest",
-          thumbnail_url: thumbnail_url || null,
+         
         status: status || "draft",
           updated_at: new Date().toISOString()
         })
