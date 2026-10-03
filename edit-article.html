@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Article — G9 News</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+    }
+
+    header {
+      background: #c90000;
+      color: white;
+      padding: 18px 25px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      font-weight: bold;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 7px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    #body {
+      min-height: 350px;
+    }
+
+    button {
+      padding: 12px 20px;
+      margin-top: 20px;
+      margin-right: 8px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .save {
+      background: #172554;
+      color: white;
+    }
+
+    .publish {
+      background: #c90000;
+      color: white;
+    }
+
+    .back {
+      background: #ddd;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>G9 NEWS — Edit Article</header>
+
+<div class="container">
+
+  <label>Headline</label>
+  <input id="title">
+
+  <label>Summary</label>
+  <textarea id="summary"></textarea>
+
+  <label>Full Article</label>
+  <textarea id="body"></textarea>
+
+  <label>Category</label>
+  <select id="category">
+    <option>Latest</option>
+    <option>Telangana</option>
+    <option>Andhra Pradesh</option>
+    <option>India</option>
+    <option>Politics</option>
+    <option>Crime</option>
+    <option>Business</option>
+    <option>Sports</option>
+    <option>Entertainment</option>
+  </select>
+
+  <button class="save" onclick="saveArticle()">Save Draft</button>
+  <button class="publish" onclick="publishArticle()">Publish</button>
+  <button class="back" onclick="window.location.href='/dashboard.html'">
+    Back
+  </button>
+
+  <div id="message">Loading article...</div>
+
+</div>
+
+<script>
+const token = sessionStorage.getItem("g9_admin_token");
+const id = new URLSearchParams(window.location.search).get("id");
+
+if (!token || !id) {
+  window.location.href = "/admin.html";
+}
+
+async function loadArticle() {
+  const response = await fetch(
+    `/api/admin-article?id=${encodeURIComponent(id)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+
+  const data = await response.json();
+
+  if (!data.success) {
+    document.getElementById("message").innerText =
+      data.error || "Could not load article.";
+    return;
+  }
+
+  const article = data.article;
+
+  document.getElementById("title").value = article.title || "";
+  document.getElementById("summary").value = article.summary || "";
+  document.getElementById("body").value = article.body || "";
+  document.getElementById("category").value = article.category || "Latest";
+
+  document.getElementById("message").innerText = "";
+}
+
+function saveArticle() {
+  document.getElementById("message").innerText =
+    "Save feature is being connected...";
+}
+
+function publishArticle() {
+  document.getElementById("message").innerText =
+    "Publish feature is being connected...";
+}
+
+loadArticle();
+</script>
+
+</body>
+</html>
