@@ -216,38 +216,6 @@ loadG9NewsVideos();
 }
 
 loadPublishedArticles();
-  async function loadPublishedArticles() {
-  try {
-    const response = await fetch("/api/supabase");
-    const data = await response.json();
-
-    const articles = (data.articles || data || [])
-      .filter(article => article.status === "published");
-
-    const container = document.getElementById("latestArticles");
-
-    if (!container || !articles.length) return;
-
-    container.innerHTML = articles.map(article => `
-      <article class="card">
-        ${article.thumbnail_url ? `
-          <img src="${article.thumbnail_url}"
-               alt="${article.title || ""}"
-               style="width:100%;height:260px;object-fit:cover;">
-        ` : ""}
-        <div class="body">
-          <span class="tag">${article.category || "Latest"}</span>
-          <h3>${article.title || ""}</h3>
-          <p>${article.summary || ""}</p>
-        </div>
-      </article>
-    `).join("");
-
-  } catch (error) {
-    console.error("Could not load published articles:", error);
-  }
-}
-
-loadPublishedArticles();
+  
 </script>
 </body></html>
