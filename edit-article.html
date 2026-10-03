@@ -164,9 +164,37 @@ async function loadArticle() {
   document.getElementById("message").innerText = "";
 }
 
-function saveArticle() {
-  document.getElementById("message").innerText =
-    "Save feature is being connected...";
+async function saveArticle() {
+  const message = document.getElementById("message");
+
+  message.innerText = "Saving draft...";
+
+  try {
+    const response = await fetch("/api/admin-save-article", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        id,
+        title: document.getElementById("title").value,
+        summary: document.getElementById("summary").value,
+        body: document.getElementById("body").value,
+        category: document.getElementById("category").value
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      message.innerText = "Draft saved successfully ✅";
+    } else {
+      message.innerText = data.error || "Could not save draft.";
+    }
+  } catch (error) {
+    message.innerText = "Could not save draft.";
+  }
 }
 
 function publishArticle() {
