@@ -49,7 +49,8 @@ module.exports = async function handler(req, res) {
     );
 
     const admins = await adminResponse.json();
-
+console.log("USER EMAIL:", user.email);
+console.log("ADMIN CHECK:", admins);
     if (!adminResponse.ok || !admins.length) {
       return res.status(403).json({ error: "Admin access required" });
     }
