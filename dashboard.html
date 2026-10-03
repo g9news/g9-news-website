@@ -109,6 +109,8 @@ async function loadArticles() {
         <h3>${escapeHtml(article.title || "Untitled")}</h3>
         <p>${escapeHtml(article.summary || "")}</p>
         <p class="status">Status: ${escapeHtml(article.status || "draft")}</p>
+        <button onclick="editArticle('${article.id}')">Edit</button>
+<button onclick="publishArticle('${article.id}')">Publish</button>
       </div>
     `).join("");
 
@@ -123,6 +125,14 @@ function escapeHtml(value) {
   div.textContent = value;
   return div.innerHTML;
 }
+function editArticle(id) {
+  window.location.href = `/edit-article.html?id=${encodeURIComponent(id)}`;
+}
+
+async function publishArticle(id) {
+  alert("Publish feature is being connected.");
+}
+  
 
 function logout() {
   sessionStorage.removeItem("g9_admin_token");
