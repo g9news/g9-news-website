@@ -103,6 +103,8 @@
   </select>
 
   <button onclick="window.location.href='/dashboard.html'">Back</button>
+  <button onclick="saveArticle('draft')">Save Draft</button>
+<button onclick="saveArticle('published')">Publish</button>
 
   <div id="message"></div>
 
@@ -127,6 +129,79 @@ document.getElementById("photo").addEventListener("change", function () {
   preview.src = URL.createObjectURL(file);
   preview.style.display = "block";
 });
+async function saveArticle(status) {
+  const message = document.getElementById("message");
+  const title = document.getElementById("title").value.trim();
+
+  if (!title) {
+    message.innerText = "Please enter a headline.";
+    return;
+  }
+
+  message.innerText = "Saving...";
+
+  try {
+    let thumbnailUrl = null;
+    const photoFile = document.getElementById("photo").files[0];
+
+    if (photoFile) {
+      message.innerText = "Uploading photo...";
+
+      const uploadResponse = await fetch("/api/admin-upload-image", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": photoFile.type,
+          "X-File-Name": encodeURIComponent(photoFile.name)
+        },
+        body: photoFile
+      });
+
+      const uploadData = await uploadResponse.json();
+
+      if (!uploadData.success) {
+        message.innerText = uploadData.error || "Photo upload failed.";
+        return;
+      }
+
+      thumbnailUrl = uploadData.url;
+    }
+
+    const response = await fetch("/api/admin-save-article", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        title: title,
+        summary: document.getElementById("summary").value,
+        body: document.getElementById("body").value,
+        category: document.getElementById("category").value,
+        thumbnail_url: thumbnailUrl,
+        status: status
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      message.innerText =
+        status === "published"
+          ? "Article published successfully ✅"
+          : "Draft saved successfully ✅";
+
+      setTimeout(() => {
+        window.location.href = "/dashboard.html";
+      }, 800);
+    } else {
+      message.innerText = data.error || "Could not save article.";
+    }
+
+  } catch (error) {
+    message.innerText = "Could not save article.";
+  }
+}
 </script>
 
 </body>
