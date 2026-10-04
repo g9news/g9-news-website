@@ -221,6 +221,7 @@ if (hero && articles[0]) {
   if (heroSummary) {
   heroSummary.textContent = mainArticle.summary || "";
 }
+  
     container.innerHTML = articles.map(article => `
       <article class="card">
        ${article.thumbnail_url ? `
