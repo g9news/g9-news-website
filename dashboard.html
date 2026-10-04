@@ -111,6 +111,7 @@ async function loadArticles() {
         <p class="status">Status: ${escapeHtml(article.status || "draft")}</p>
         <button onclick="editArticle('${article.id}')">Edit</button>
 <button onclick="publishArticle('${article.id}')">Publish</button>
+<button onclick="deleteArticle('${article.id}')">Delete</button>
       </div>
     `).join("");
 
