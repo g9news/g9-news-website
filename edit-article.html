@@ -160,6 +160,11 @@ async function loadArticle() {
   document.getElementById("summary").value = article.summary || "";
   document.getElementById("body").value = article.body || "";
   document.getElementById("category").value = article.category || "Latest";
+  if (article.thumbnail_url) {
+  const preview = document.getElementById("photoPreview");
+  preview.src = article.thumbnail_url;
+  preview.style.display = "block";
+}
 
   document.getElementById("message").innerText = "";
 }
