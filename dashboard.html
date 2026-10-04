@@ -139,7 +139,7 @@ async function deleteArticle(id) {
   }
 
   try {
-    const response = await fetch("/api/admin-delete-article", {
+  const response = await fetch("/api/admin-save-article", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
