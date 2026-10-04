@@ -73,11 +73,54 @@ return res.status(200).json({ success: true });
     
     const { id, title, summary, body, category, thumbnail_url, status } = req.body || {};
 
-    if (!id || !title) {
-      return res.status(400).json({ error: "Article ID and headline required" });
-    }
+  if (!title) {
+  return res.status(400).json({ error: "Headline required" });
+}
+if (!id) {
+  const articleData = {
+    title,
+    summary: summary || "",
+    body: body || "",
+    category: category || "Latest",
+    status: status === "published" ? "published" : "draft",
+    updated_at: new Date().toISOString()
+  };
 
-    // Save article changes
+  if (thumbnail_url) {
+    articleData.thumbnail_url = thumbnail_url;
+  }
+
+  if (status === "published") {
+    articleData.published_at = new Date().toISOString();
+  }
+
+  const createResponse = await fetch(
+    `${supabaseUrl}/rest/v1/articles`,
+    {
+      method: "POST",
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+        "Content-Type": "application/json",
+        Prefer: "return=representation"
+      },
+      body: JSON.stringify(articleData)
+    }
+  );
+
+  if (!createResponse.ok) {
+    return res.status(500).json({ error: "Could not create article" });
+  }
+
+  const createdArticle = await createResponse.json();
+
+  return res.status(200).json({
+    success: true,
+    article: createdArticle[0]
+  });
+}
+  
+   // Save article changes
     const updateResponse = await fetch(
       `${supabaseUrl}/rest/v1/articles?id=eq.${encodeURIComponent(id)}`,
       {
