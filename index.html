@@ -190,7 +190,12 @@ loadG9NewsVideos();
 
     const category = new URLSearchParams(window.location.search).get("category");
 
-const articles = (data.articles || data || []);
+const articles = (data.articles || data || [])
+  .filter(article => article.status === "published")
+  .filter(article =>
+    !category ||
+    (article.category || "").trim().toLowerCase() === category.trim().toLowerCase()
+  );
   
     const container = document.getElementById("latestArticles");
 
