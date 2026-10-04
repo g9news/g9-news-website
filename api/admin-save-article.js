@@ -1,5 +1,5 @@
 module.exports = async function handler(req, res) {
-  if (req.method !== "POST") {
+ if (!["POST", "DELETE"].includes(req.method)) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
@@ -46,8 +46,32 @@ module.exports = async function handler(req, res) {
     if (!adminResponse.ok || !admins.length) {
       return res.status(403).json({ error: "Admin access required" });
     }
+if (req.method === "DELETE") {
+  const { id } = req.body || {};
 
-  const { id, title, summary, body, category, thumbnail_url, status } = req.body || {};
+  if (!id) {
+    return res.status(400).json({ error: "Article ID required" });
+  }
+const deleteResponse = await fetch(
+  `${supabaseUrl}/rest/v1/articles?id=eq.${encodeURIComponent(id)}`,
+  {
+    method: "DELETE",
+    headers: {
+      apikey: serviceKey,
+      Authorization: `Bearer ${serviceKey}`
+    }
+  }
+);
+
+if (!deleteResponse.ok) {
+  return res.status(500).json({ error: "Could not delete article" });
+}
+
+return res.status(200).json({ success: true });
+}
+
+    
+    const { id, title, summary, body, category, thumbnail_url, status } = req.body || {};
 
     if (!id || !title) {
       return res.status(400).json({ error: "Article ID and headline required" });
