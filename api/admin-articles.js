@@ -57,7 +57,7 @@ console.log("ADMIN CHECK:", admins);
 
     // Load draft articles
     const articlesResponse = await fetch(
-      `${supabaseUrl}/rest/v1/articles?status=eq.draft&select=id,title,summary,status,created_at&order=created_at.desc`,
+      `${supabaseUrl}/rest/v1/articles?select=id,title,summary,status,created_at&order=created_at.desc`,
       {
         headers: {
           apikey: serviceKey,
