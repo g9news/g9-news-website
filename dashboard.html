@@ -133,7 +133,13 @@ function editArticle(id) {
 async function publishArticle(id) {
   alert("Publish feature is being connected.");
 }
-  
+ async function deleteArticle(id) {
+  if (!confirm("Are you sure you want to delete this article?")) {
+    return;
+  }
+
+  alert("Delete connection is being added.");
+} 
 
 function logout() {
   sessionStorage.removeItem("g9_admin_token");
