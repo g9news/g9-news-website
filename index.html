@@ -197,11 +197,13 @@ loadG9NewsVideos();
 
     container.innerHTML = articles.map(article => `
       <article class="card">
-        ${article.thumbnail_url ? `
-          <img src="${article.thumbnail_url}"
-               alt="${article.title || ""}"
-               style="width:100%;height:260px;object-fit:cover;">
-        ` : ""}
+       ${article.thumbnail_url ? `
+  <a href="/article.html?id=${article.id}">
+    <img src="${article.thumbnail_url}"
+         alt="${article.title || ""}"
+         style="width:100%;height:260px;object-fit:cover;">
+  </a>
+` : ""}
         <div class="body">
           <span class="tag">${article.category || "Latest"}</span>
          <h3><a href="/article.html?id=${article.id}" style="color:inherit;text-decoration:none;">${article.title || ""}</a></h3>
