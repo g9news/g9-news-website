@@ -4,7 +4,7 @@
 </style></head><body>
 <div class="top"><div class="c"><span>G9 News — Journalism with responsibility</span><span>Telangana • Andhra Pradesh • India</span></div></div>
 <header class="head"><div class="c"><img class="logo" src="logo.png" alt="G9 News"><div>Latest verified news & reports</div></div></header>
-<nav class="nav"><div class="c"><a href="#">Home</a><a href="#">Telangana</a><a href="#">Andhra Pradesh</a><a href="#">India</a><a href="#">Politics</a><a href="#">Crime</a><a href="#">Business</a><a href="#">Sports</a><a href="#">Entertainment</a><a href="#">Videos</a></div></nav>
+<nav class="nav"><div class="c"><a href="/">Home</a><a href="/?category=Telangana">Telangana</a><a href="/?category=Andhra%20Pradesh">Andhra Pradesh</a><a href="#">India</a><a href="#">Politics</a><a href="#">Crime</a><a href="#">Business</a><a href="#">Sports</a><a href="#">Entertainment</a><a href="#">Videos</a></div></nav>
 <div class="breaking"><div class="c"><b>BREAKING</b><span>Latest breaking news headlines will appear here.</span></div></div>
 <main class="main"><div class="c">
 <div class="heroGrid"><section class="hero"><div class="ph">MAIN STORY IMAGE</div><div class="heroText"><span class="tag">Top Story</span><h1>G9 News — Latest headlines, reports and breaking developments</h1><div>Replace this with the day's lead verified report.</div></div></section>
@@ -188,9 +188,11 @@ loadG9NewsVideos();
     const response = await fetch("/api/supabase");
     const data = await response.json();
 
-    const articles = (data.articles || data || [])
-      .filter(article => article.status === "published");
+    const category = new URLSearchParams(window.location.search).get("category");
 
+const articles = (data.articles || data || [])
+  .filter(article => article.status === "published")
+  .filter(article => !category || article.category === category);
     const container = document.getElementById("latestArticles");
 
     if (!container || !articles.length) return;
