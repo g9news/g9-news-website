@@ -140,7 +140,7 @@ async function deleteArticle(id) {
 
   try {
   const response = await fetch("/api/admin-save-article", {
-      method: "POST",
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`
