@@ -93,7 +93,8 @@ return res.status(200).json({ success: true });
           summary: summary || "",
           body: body || "",
           category: category || "Latest",
-         
+         ...(thumbnail_url ? { thumbnail_url } : {}),
+...(status === "published" ? { published_at: new Date().toISOString() } : {}),
         status: status || "draft",
           updated_at: new Date().toISOString()
         })
