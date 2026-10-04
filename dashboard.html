@@ -133,14 +133,33 @@ function editArticle(id) {
 async function publishArticle(id) {
   alert("Publish feature is being connected.");
 }
- async function deleteArticle(id) {
+async function deleteArticle(id) {
   if (!confirm("Are you sure you want to delete this article?")) {
     return;
   }
 
-  alert("Delete connection is being added.");
-} 
+  try {
+    const response = await fetch("/api/admin-delete-article", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ id })
+    });
 
+    const data = await response.json();
+
+    if (data.success) {
+      alert("Article deleted successfully ✅");
+      loadArticles();
+    } else {
+      alert(data.error || "Could not delete article.");
+    }
+  } catch (error) {
+    alert("Could not delete article.");
+  }
+}
 function logout() {
   sessionStorage.removeItem("g9_admin_token");
   window.location.href = "/admin.html";
