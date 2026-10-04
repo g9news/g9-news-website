@@ -221,7 +221,30 @@ if (hero && articles[0]) {
   if (heroSummary) {
   heroSummary.textContent = mainArticle.summary || "";
 }
-  
+  const sideArticles = document.querySelectorAll(".side article");
+
+sideArticles.forEach((card, index) => {
+  const article = articles[index + 1];
+  if (!article) return;
+
+  const thumb = card.querySelector(".thumb");
+  const title = card.querySelector("h3");
+  const meta = card.querySelector(".meta");
+
+  if (thumb) {
+    thumb.innerHTML = article.thumbnail_url
+      ? `<img src="${article.thumbnail_url}" style="width:100%;height:100%;object-fit:cover;">`
+      : "NEWS IMAGE";
+  }
+
+  if (title) {
+    title.innerHTML = `<a href="/article.html?id=${article.id}">${article.title || ""}</a>`;
+  }
+
+  if (meta) {
+    meta.textContent = `${article.category || "Latest"} • TODAY`;
+  }
+});
     container.innerHTML = articles.map(article => `
       <article class="card">
        ${article.thumbnail_url ? `
