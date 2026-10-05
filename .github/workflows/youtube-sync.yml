@@ -11,6 +11,5 @@ jobs:
 
     steps:
       - name: Sync G9 News YouTube videos
-        env:
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
-        run: curl --fail --silent --show-error -H "Authorization: Bearer $CRON_SECRET" "https://g9newstelugu.com/api/sync-youtube"
+        run: |
+          curl --fail --silent --show-error -H 'Authorization: Bearer ${{ secrets.CRON_SECRET }}' 'https://g9newstelugu.com/api/sync-youtube'
