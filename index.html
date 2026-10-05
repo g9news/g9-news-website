@@ -276,6 +276,18 @@ const thumb = card.querySelector(".thumb");
 const title = card.querySelector("h3");
 const summary = card.querySelector("p");
 const tag = card.querySelector(".tag");
+     const meta = card.querySelector(".meta");
+     if (meta) {
+  meta.textContent = new Date(article.published_at || article.created_at).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  });
+}
      if (tag) tag.textContent = categoryName;
 
 if (thumb) {
@@ -307,7 +319,18 @@ if (summary) {
     const title = card.querySelector("h3");
     const summary = card.querySelector("p");
     const tag = card.querySelector(".tag");
-
+const meta = card.querySelector(".meta");
+    if (meta) {
+  meta.textContent = new Date(article.published_at || article.created_at).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  });
+}
     if (tag) tag.textContent = categoryName;
 
     if (thumb) {
