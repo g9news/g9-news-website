@@ -15,7 +15,7 @@
 <a class="more" href="#">VIEW ALL</a>
 </div>
 
-<div class="cards">
+<div class="cards" id="latestNewsCards">
 
 <article class="card">
 <div class="thumb">NEWS IMAGE</div>
@@ -261,7 +261,38 @@ sideArticles.forEach((card, index) => {
         </div>
       </article>
     `).join("");
-const topCards = document.querySelectorAll("#categoryHighlights .card");
+const latestNewsCards = document.querySelectorAll("#latestNewsCards .card");
+ ["Telangana", "Andhra Pradesh", "India", "Crime"].forEach((categoryName, index) => {
+   const article = articles.find(
+  article =>
+    (article.category || "").trim().toLowerCase() ===
+    categoryName.toLowerCase()
+);
+   if (article && latestNewsCards[index]) {
+     const card = latestNewsCards[index];
+     if (!article || !card) return;
+
+const thumb = card.querySelector(".thumb");
+const title = card.querySelector("h3");
+const summary = card.querySelector("p");
+const tag = card.querySelector(".tag");
+     if (tag) tag.textContent = categoryName;
+
+if (thumb) {
+  thumb.innerHTML = article.thumbnail_url
+    ? `<img src="${article.thumbnail_url}" alt="${article.title || ""}" style="width:100%;height:100%;object-fit:cover;">`
+    : "NEWS IMAGE";
+}
+     if (title) {
+  title.innerHTML = `<a href="/article.html?id=${article.id}" style="color:inherit;text-decoration:none;">${article.title || ""}</a>`;
+}
+
+if (summary) {
+  summary.textContent = article.summary || "";
+}
+}
+});
+     const topCards = document.querySelectorAll("#categoryHighlights .card");
 
 ["Politics", "Crime", "Business"].forEach((categoryName, index) => {
   const article = articles.find(
