@@ -347,7 +347,7 @@ if (regionalNews) {
         </div>
         <div>
           <h3><a href="/article.html?id=${article.id}" style="color:inherit;text-decoration:none;">${article.title || ""}</a></h3>
-          <div class="meta">${label} • TODAY</div>
+         <div class="meta">${label} • ${new Date(article.published_at || article.created_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</div>
         </div>
       </div>
     `).join("");
