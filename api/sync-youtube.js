@@ -1,4 +1,9 @@
 module.exports = async function handler(req, res) {
+  const authHeader = req.headers.authorization;
+
+if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  return res.status(401).json({ error: "Unauthorized" });
+}
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
