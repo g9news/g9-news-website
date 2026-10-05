@@ -220,6 +220,9 @@ if (heroMeta) {
     heroTitle.innerHTML =
       `<a href="/article.html?id=${mainArticle.id}" style="color:inherit;text-decoration:none;">${mainArticle.title || ""}</a>`;
   }
+if (heroMeta) {
+  heroMeta.textContent = `${(mainArticle.category || "LATEST").toUpperCase()} • ${formatArticleTime(mainArticle.published_at || mainArticle.created_at)}`;
+}
   if (heroSummary) {
   heroSummary.textContent = mainArticle.summary || "";
 }
