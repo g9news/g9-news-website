@@ -230,9 +230,7 @@ const heroTitle = hero?.querySelector("h1");
 const heroMeta = document.getElementById("heroMeta");
 if (hero && articles[0]) {
   const mainArticle = articles[0];
-if (heroMeta) {
-  heroMeta.textContent = `${mainArticle.category || "Latest"} • ${timeAgo(mainArticle.published_at || mainArticle.created_at)}`;
-}
+
   if (heroImage) {
     heroImage.innerHTML = mainArticle.thumbnail_url
       ? `<img src="${mainArticle.thumbnail_url}" alt="${mainArticle.title || ""}" style="width:100%;height:100%;object-fit:cover;">`
