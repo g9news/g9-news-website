@@ -8,7 +8,7 @@
 <div class="breaking"><div class="c"><b>BREAKING</b><span>Latest breaking news headlines will appear here.</span></div></div>
 <main class="main"><div class="c">
 <div class="heroGrid"><section class="hero"><div class="ph">MAIN STORY IMAGE</div><div class="heroText"><span class="tag">Top Story</span><h1>G9 News — Latest headlines, reports and breaking developments</h1><div>Replace this with the day's lead verified report.</div></div></section>
-<aside class="side"><article><div class="thumb">NEWS IMAGE</div><h3>Latest important update from Telangana</h3><div class="meta">TELANGANA • TODAY</div></article><article><div class="thumb">NEWS IMAGE</div><h3>Major development in Andhra Pradesh</h3><div class="meta">ANDHRA PRADESH • TODAY</div></article><article><h3>India: key national developments</h3><div class="meta">INDIA • TODAY</div></article></aside></div>
+<aside class="side"><article><div class="thumb">NEWS IMAGE</div><h3>Latest important update from Telangana</h3><div class="meta" id="heroMeta">TELANGANA • TODAY</div></article><article><div class="thumb">NEWS IMAGE</div><h3>Major development in Andhra Pradesh</h3><div class="meta">ANDHRA PRADESH • TODAY</div></article><article><h3>India: key national developments</h3><div class="meta">INDIA • TODAY</div></article></aside></div>
 <section class="section">
 <div class="sectionHead">
 <h2>Latest News</h2>
@@ -204,10 +204,12 @@ const hero = document.querySelector(".hero");
 const heroImage = hero?.querySelector(".ph");
 const heroTitle = hero?.querySelector("h1");
     const heroSummary = hero?.querySelector("p");
-
+const heroMeta = document.getElementById("heroMeta");
 if (hero && articles[0]) {
   const mainArticle = articles[0];
-
+if (heroMeta) {
+  heroMeta.textContent = `${mainArticle.category || "Latest"} • ${timeAgo(mainArticle.published_at || mainArticle.created_at)}`;
+}
   if (heroImage) {
     heroImage.innerHTML = mainArticle.thumbnail_url
       ? `<img src="${mainArticle.thumbnail_url}" alt="${mainArticle.title || ""}" style="width:100%;height:100%;object-fit:cover;">`
