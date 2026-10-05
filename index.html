@@ -59,7 +59,7 @@
 <article class="card"><div class="thumb">NEWS IMAGE</div><div class="body"><span class="tag">Crime</span><h3>Police investigation and crime report</h3><p>Short verified summary will appear here.</p><div class="meta">3 HOURS AGO</div></div></article>
 <article class="card"><div class="thumb">NEWS IMAGE</div><div class="body"><span class="tag">Business</span><h3>Business and economy: today's key update</h3><p>Short verified summary will appear here.</p><div class="meta">4 HOURS AGO</div></div></article>
 </div></section>
-<section class="section"><div class="regional"><div><div class="sectionHead"><h2>Telangana</h2><a class="more" href="#">MORE →</a></div><div class="item"><div class="thumb">IMAGE</div><div><h3>Hyderabad and Telangana latest news</h3><div class="meta">TELANGANA • TODAY</div></div></div><div class="item"><div class="thumb">IMAGE</div><div><h3>Important district-level development</h3><div class="meta">TELANGANA • TODAY</div></div></div><div class="item"><div class="thumb">IMAGE</div><div><h3>Government and public affairs update</h3><div class="meta">TELANGANA • TODAY</div></div></div></div>
+<section class="section"><div class="regional" id="regionalNews"><div><div class="sectionHead"><h2>Telangana</h2><a class="more" href="#">MORE →</a></div><div class="item"><div class="thumb">IMAGE</div><div><h3>Hyderabad and Telangana latest news</h3><div class="meta">TELANGANA • TODAY</div></div></div><div class="item"><div class="thumb">IMAGE</div><div><h3>Important district-level development</h3><div class="meta">TELANGANA • TODAY</div></div></div><div class="item"><div class="thumb">IMAGE</div><div><h3>Government and public affairs update</h3><div class="meta">TELANGANA • TODAY</div></div></div></div>
 <div><div class="sectionHead"><h2>Andhra Pradesh</h2><a class="more" href="#">MORE →</a></div><div class="item"><div class="thumb">IMAGE</div><div><h3>Latest Andhra Pradesh news and developments</h3><div class="meta">ANDHRA PRADESH • TODAY</div></div></div><div class="item"><div class="thumb">IMAGE</div><div><h3>District and city news update</h3><div class="meta">ANDHRA PRADESH • TODAY</div></div></div><div class="item"><div class="thumb">IMAGE</div><div><h3>Public affairs and breaking report</h3><div class="meta">ANDHRA PRADESH • TODAY</div></div></div></div></div></section>
 <section class="section">
   <div class="sectionHead">
@@ -261,6 +261,48 @@ sideArticles.forEach((card, index) => {
         </div>
       </article>
     `).join("");
+  const regionalNews = document.getElementById("regionalNews");
+
+if (regionalNews) {
+  const telanganaArticles = articles
+    .filter(article => (article.category || "").trim().toLowerCase() === "telangana")
+    .slice(0, 3);
+
+  const apArticles = articles
+    .filter(article => (article.category || "").trim().toLowerCase() === "andhra pradesh")
+    .slice(0, 3);
+
+  const makeRegionalItems = (items, label) =>
+    items.map(article => `
+      <div class="item">
+        <div class="thumb">
+          ${article.thumbnail_url
+            ? `<img src="${article.thumbnail_url}" alt="${article.title || ""}" style="width:100%;height:100%;object-fit:cover;">`
+            : "IMAGE"}
+        </div>
+        <div>
+          <h3><a href="/article.html?id=${article.id}" style="color:inherit;text-decoration:none;">${article.title || ""}</a></h3>
+          <div class="meta">${label} • TODAY</div>
+        </div>
+      </div>
+    `).join("");
+
+  regionalNews.innerHTML = `
+    <div>
+      <div class="sectionHead">
+        <h2>Telangana</h2>
+      </div>
+      ${makeRegionalItems(telanganaArticles, "TELANGANA")}
+    </div>
+
+    <div>
+      <div class="sectionHead">
+        <h2>Andhra Pradesh</h2>
+      </div>
+      ${makeRegionalItems(apArticles, "ANDHRA PRADESH")}
+    </div>
+  `;
+}
 }
   } catch (error) {
     console.error("Could not load published articles:", error);
