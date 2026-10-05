@@ -54,7 +54,7 @@
 </article>
 
 </div>
-</section><a class="more" href="#">VIEW ALL →</a></div><div class="cards">
+</section><a class="more" href="#">VIEW ALL →</a></div><div class="cards" id="categoryHighlights">
 <article class="card"><div class="thumb">NEWS IMAGE</div><div class="body"><span class="tag">Politics</span><h3>Latest political development and official statements</h3><p>Short verified summary will appear here.</p><div class="meta">2 HOURS AGO</div></div></article>
 <article class="card"><div class="thumb">NEWS IMAGE</div><div class="body"><span class="tag">Crime</span><h3>Police investigation and crime report</h3><p>Short verified summary will appear here.</p><div class="meta">3 HOURS AGO</div></div></article>
 <article class="card"><div class="thumb">NEWS IMAGE</div><div class="body"><span class="tag">Business</span><h3>Business and economy: today's key update</h3><p>Short verified summary will appear here.</p><div class="meta">4 HOURS AGO</div></div></article>
@@ -261,6 +261,40 @@ sideArticles.forEach((card, index) => {
         </div>
       </article>
     `).join("");
+const topCards = document.querySelectorAll(".cards .card");
+
+["Politics", "Crime", "Business"].forEach((categoryName, index) => {
+  const article = articles.find(
+    article =>
+      (article.category || "").trim().toLowerCase() ===
+      categoryName.toLowerCase()
+  );
+
+  if (article && topCards[index]) {
+    const card = topCards[index];
+    const thumb = card.querySelector(".thumb");
+    const title = card.querySelector("h3");
+    const summary = card.querySelector("p");
+    const tag = card.querySelector(".tag");
+
+    if (tag) tag.textContent = categoryName;
+
+    if (thumb) {
+      thumb.innerHTML = article.thumbnail_url
+        ? `<img src="${article.thumbnail_url}" alt="${article.title || ""}" style="width:100%;height:100%;object-fit:cover;">`
+        : "NEWS IMAGE";
+    }
+
+    if (title) {
+      title.innerHTML = `<a href="/article.html?id=${article.id}" style="color:inherit;text-decoration:none;">${article.title || ""}</a>`;
+    }
+
+    if (summary) {
+      summary.textContent = article.summary || "";
+    }
+  }
+});
+  
   const regionalNews = document.getElementById("regionalNews");
 
 if (regionalNews) {
