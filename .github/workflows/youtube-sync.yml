@@ -16,4 +16,4 @@ jobs:
 
       - name: Create AI article drafts
         run: |
-          curl --fail --silent --show-error-H 'Authorization: Bearer ${{ secrets.CRON_SECRET }}' 'https://g9newstelugu.com/api/create-article'
+         curl --fail --silent --show-error -H 'Authorization: Bearer ${{ secrets.CRON_SECRET }}' 'https://g9newstelugu.com/api/create-article'
